@@ -1,0 +1,22 @@
+{% extends "base.html.j2" %}
+{% import "includes/macros/alerts.html.j2" as alerts %}
+{% block content %}
+<div class="pt-12 prose dark:prose-invert hover:prose-a:text-blue-500 max-w-full">
+    {{ alerts.flash_alerts(request) }}
+    <h2>Sign in</h2>
+    <p>Welcome to IndieAuthify's IndieAuth Endpoint, <code>{{ request.session.get("rel_me_check").replace("https://", "").replace("http://", "").strip("/") }}</code>.</p>
+    <p>You must authenticate yourself before you are able to grant authorization codes.</p>
+    <p>You can use any of the authentication methods below to sign in ...</p>
+    <ul class="rel_me_links">
+        {% for link in rel_me_links %}
+        {% if link.startswith("https://twitter.com") %}
+        <li><s>Twitter</s></li>
+        {% elif link.startswith("https://github.com") %}
+        <li><a href="/auth/github">GitHub</a>&nbsp;<code>{{ link }}</code></li>
+        {% else %}
+        <li><s>{{ link }}</s></li>
+        {% endif %}
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

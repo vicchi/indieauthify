@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>{% if title %}{{ title }}{% else %}IndieAuthify Endpoint{% endif %}</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="stylesheet" href="{{ url_for('static', path='assets/css/theme.css') }}"></link>
+    </head>
+    <body class="dark:text-white bg-white dark:bg-gray-900 font-sans text-gray-800">
+        <div class="min-h-screen flex flex-col">
+            <main class="flex-1 w-10/12 max-w-screen-sm md:max-w-screen-md mx-auto">
+                {% block header %}
+                {% include "includes/header.html.j2" with context %}
+                {% endblock header %}
+                {% block content %}{% endblock %}
+            </main>
+        </div>
+</body>
+</html>

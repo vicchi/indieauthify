@@ -1,0 +1,10 @@
+.direnv/
+node_modules/
+__pycache__/
+*.egg-info/
+.DS_Store
+.env
+data-stores/*
+!data-stores/.gitkeep
+run/*
+!run/.gitkeep

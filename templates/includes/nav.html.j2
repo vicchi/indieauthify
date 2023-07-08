@@ -1,0 +1,12 @@
+{% block nav %}
+<nav>
+    <ul class="flex">
+    {% if request.session.get("logged_in") == True %}
+        <li class="mr-6"><a class="text-gray-700 hover:text-purple-400 dark:text-gray-200 dark:hover:text-purple-400 {% if '/issued' in request.path %} active{% endif %}" href="/issued">Issued Tokens</a></li>
+        <li class="mr-6"><a class="text-gray-700 hover:text-purple-400 dark:text-gray-200 dark:hover:text-purple-400" href="/logout">Logout</a></li>
+    {% else %}
+        <li class="mr-6"><a class="text-gray-700 hover:text-purple-400 dark:text-gray-200 dark:hover:text-purple-400 {% if '/login' in request.path %} active{% endif %}" href="/login">Login</a></li>
+    {% endif %}
+    </ul>
+</nav>
+{% endblock nav %}

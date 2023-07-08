@@ -1,0 +1,19 @@
+{
+  "name": "indieauthify-theme",
+  "version": "1.0.0",
+  "description": "The default theme for IndieAuthify",
+  "main": "index.js",
+  "repository": "https://github.com/vicchi/indieauthify",
+  "author": "Gary Gale <gary@vicchi.org>",
+  "license": "BSD-3-Clause",
+  "private": true,
+  "dependencies": {
+    "@catppuccin/tailwindcss": "^0.1.6",
+    "@tailwindcss/aspect-ratio": "^0.4.2",
+    "@tailwindcss/forms": "^0.5.3",
+    "@tailwindcss/typography": "^0.5.9",
+    "autoprefixer": "^10.4.14",
+    "postcss": "^8.4.25",
+    "tailwindcss": "^3.3.2"
+  }
+}

@@ -1,0 +1,37 @@
+{% extends "base.html.j2" %}
+{% import "includes/macros/alerts.html.j2" as alerts %}
+{% block content %}
+<div class="pt-12 prose dark:prose-invert hover:prose-a:text-blue-500 max-w-full">
+    {% with messages = get_flash_messages(request) %}
+    {% if messages %}
+    {% for message in messages %}
+        {{ alerts.alert(category=message['category'], message=message['message']) }}
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+    <h2>Issued Token Information</h2>
+    {% if token_app %}
+    <h2>About The Provider</h2>
+    <img src="{{ token_app.url}}{{ token_app.logo }}" alt="{{ token.client_id }} icon" />
+    <p>This token was issued by <a href="{{ token_app.name }}">{{ token[1] }}</a>.</p>
+    <p>{{ token_app.description }}</p>
+    {% endif %}
+    <h2>About This Token</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Issued To</th>
+                <th>Issued On</th>
+                <th>Issued From</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td data-label="User Login">{{ token[1] }}</td>
+                <td data-label="Site You Logged Into">{{ token[2] }}</td>
+                <td data-label="Time Token Was Issued">{{ token[3] }}</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+{% endblock %}

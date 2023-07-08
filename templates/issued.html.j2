@@ -1,0 +1,68 @@
+{% extends "base.html.j2" %}
+{% import "includes/macros/alerts.html.j2" as alerts %}
+{% block content %}
+<div class="pt-12 prose dark:prose-invert hover:prose-a:text-blue-500 max-w-full">
+    {{ alerts.flash_alerts(request) }}
+    {% if issued_tokens %}
+    <h2>Issued Tokens</h2>
+    <p>These are the tokens that you have issued from this endpoint.</p>
+    <table>
+        <thead>
+            <tr>
+                <th>URL Authorized</th>
+                <th>Issued On</th>
+                <th>Issued To</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for token in issued_tokens %}
+            <tr>
+                <td data-label="User Login">{{ token[1] }}</td>
+                <td data-label="Site You Logged Into">{{ token[2] }}</td>
+                <td data-label="Time Token Was Issued">{{ token[3] }}</td>
+                <td><a href="/issued?token={{ token[0] }}">See Action</a></td>
+                <td><a href="/revoke?token={{ token[0] }}">Revoke</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <p><a href="/revoke?token=all">Revoke all tokens</a>.</p>
+    {% else %}
+    <p>You have not issued any tokens yet.</p>
+    {% endif %}
+
+    <h2>Issue a Token</h2>
+    <p>Use the form below to issue a token.</p>
+    <form action="/generate" method="POST">
+        <div class="text-gray-700">
+            <label class="block mb-1" for="client_id">Client ID:</label>
+            <input class="w-full h-10 px-3 text-base placeholder-gray-600 border rounded-lg focus:shadow-outline" type="url" name="client_id" id="client_id" placeholder="https://www.vicchi.org" pattern="https?://.+" required/>
+        </div>
+        <div class="pt-4 text-gray-700">
+            <label class="block mb-1" for="redirect_uri">Redirect URI:</label>
+            <input class="w-full h-10 px-3 text-base placeholder-gray-600 border rounded-lg focus:shadow-outline" type="url" name="redirect_uri" id="redirect_uri" placeholder="https://www.vicchi.org/callback" pattern="https?://.+" required/>
+        </div>
+        <div class="pt-4 text-gray-700">
+            <label class="block mb-1" for="scope">Scope(s), separated by spaces:</label>
+            <input class="w-full h-10 px-3 text-base placeholder-gray-600 border rounded-lg focus:shadow-outline" type="text" name="scope" id="scope" placeholder="create update delete" pattern="^[a-z]{4,}.*$" required />
+        </div>
+        <details class="pt-4">
+            <summary>Common Scope Definitions</summary>
+            <p>Here are the common scopes that applications may need:</p>
+            <ul>
+                {% for scope_name, description in SCOPE_DEFINITIONS.items() %}
+                    <li><code>{{ scope_name }}</code>: {{ description }}</li>
+                {% endfor %}
+            </ul>
+        </details><br>
+        <input type="hidden" name="me" value="{{ request.session.get('me') }}" />
+        <input type="hidden" name="response_type" value="code" />
+        <input type="hidden" name="code_challenge" value="" />
+        <input type="hidden" name="code_challenge_method" value="" />
+        <input type="hidden" name="is_manually_issued" value="true" />
+        <input type="hidden" name="state" value="" />
+        <button type="submit" class="h-10 px-5 text-gray-700 hover:text-purple-400 dark:text-gray-200 dark:hover:text-purple-400 transition-colors duration-150 border border-purple-400 rounded-lg focus:shadow-outline" />Issue Token</button
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,30 @@
+{% extends "base.html.j2" %}
+{% import "includes/macros/alerts.html.j2" as alerts %}
+{% block content %}
+<div class="pt-12 prose dark:prose-invert hover:prose-a:text-blue-500 max-w-full">
+    {{ alerts.flash_alerts(request) }}
+    {% if request.session.get('rel_me_check') %}
+    <h2>Welcome to IndieAuthify <code>{{ request.session.get("rel_me_check").replace("https://", "").replace("http://", "").strip("/") }}</code></h2>
+    {% else %}
+    <h2>Welcome to IndieAuthify</h2>
+    {% endif %}
+    <h2>What is this?</h2>
+    <p>IndieAuthify is a service that lets you authenticate to a website with your domain name.</p>
+    <p>
+        IndieAuthify works using <a href="https://indieauth.com">IndieAuth</a>. To sign in, you must first add <code>rel=me</code> links to your site. Then,
+        IndieAuthify will present you with authentication options based on your <code>rel=me</code> links.
+    </p>
+    <p>
+        Once you have signed in with an authentication option, you can authorize a service to sign you
+        in as your domain name.
+    </p>
+    <p>
+        Sorry but IndieAuthify is not currently open for registrations.
+    </p>
+    <p>
+        If you are looking for a hosted IndieAuth solution, check out the
+        "<a href="https://indieweb.org/IndieAuth#Set_up_using_IndieAuth.com">Set up using IndieAuth</a>" tutorial
+        on the IndieWeb wiki.
+    </p>
+</div>
+{% endblock %}
