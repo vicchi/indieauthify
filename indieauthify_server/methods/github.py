@@ -78,7 +78,7 @@ async def github_callback_handler(request: Request, code: str, state: str) -> Re
     request.session['logged_in'] = True
 
     if request.session.get('user_redirect'):
-        redirect_uri = request.session.get('user_redirect')
+        redirect_uri = str(request.session.get('user_redirect'))
         request.session.pop('user_redirect')
         return RedirectResponse(url=redirect_uri)
 

@@ -6,8 +6,9 @@ from typing import Annotated, Union
 
 from fastapi import APIRouter, Form, Query
 from fastapi.requests import Request
-from fastapi.responses import HTMLResponse, JSONResponse, Response
+from fastapi.responses import Response
 
+from indieauthify_server.models import AuthorizeParams, TokenParams
 from indieauthify_server.methods.authorize import authorize_handler
 from indieauthify_server.methods.github import github_auth_handler, github_callback_handler
 from indieauthify_server.methods.metadata import metadata_handler
@@ -22,7 +23,7 @@ router = APIRouter()
 
 
 @router.get('/')
-async def home_page(request: Request) -> HTMLResponse:
+async def home_page(request: Request) -> Response:
     """
     Home page route handler
     """
@@ -36,7 +37,7 @@ async def get_login_page(
     redirect: Annotated[Union[str,
                               None],
                         Query(alias='r')] = None
-) -> HTMLResponse:
+) -> Response:
     """
     GET login page handler
     """
@@ -52,7 +53,7 @@ async def post_login_page(
     redirect: Annotated[Union[str,
                               None],
                         Query(alias='r')] = None
-) -> HTMLResponse:
+) -> Response:
     """
     POST login page handler
     """
@@ -61,7 +62,7 @@ async def post_login_page(
 
 
 @router.get('/rel')
-async def rel_page(request: Request) -> HTMLResponse:
+async def rel_page(request: Request) -> Response:
     """
     rel=me login page handler
     """
@@ -79,66 +80,24 @@ async def logout_page(request: Request) -> Response:
 
 
 @router.get('/auth')
-async def get_authorize(  # pylint: disable=too-many-arguments
-    request: Request,
-    me: str | None = None,  # pylint: disable=invalid-name
-    grant_type: str | None = None,
-    code: str | None = None,
-    client_id: str | None = None,
-    redirect_uri: str | None = None,
-    response_type: str | None = None,
-    state: str | None = None,
-    code_challenge: str | None = None,
-    code_challenge_method: str | None = None,
-    scope: str | None = None
-) -> JSONResponse:
+async def get_authorize(request: Request, params: AuthorizeParams) -> Response:
     """
     GET authorisation page handler
     """
 
-    return await authorize_handler(
-        request,
-        me,
-        grant_type,
-        code,
-        client_id,
-        redirect_uri,
-        response_type,
-        state,
-        code_challenge,
-        code_challenge_method,
-        scope
-    )
+    return await authorize_handler(request=request, params=params)
 
 
 @router.post('/auth')
 async def post_authorize(     # pylint: disable=too-many-arguments
-    _request: Request,
-    grant_type: Annotated[str,
-                          Form()],
-    code: Annotated[str,
-                    Form()],
-    client_id: Annotated[str,
-                         Form()],
-    redirect_uri: Annotated[str,
-                            Form()],
-    code_challenge: Annotated[str,
-                              Form()],
-    code_challenge_method: Annotated[str,
-                                     Form()]
-) -> JSONResponse:
+    request: Request,
+    params: AuthorizeParams
+) -> Response:
     """
     POST authorisation page handler
     """
 
-    return await authorize_handler(
-        grant_type,
-        code,
-        client_id,
-        redirect_uri,
-        code_challenge,
-        code_challenge_method
-    )
+    return await authorize_handler(request=request, params=params)
 
 
 @router.get('/auth/github')
@@ -160,7 +119,7 @@ async def github_callback(request: Request, code: str, state: str) -> Response:
 
 
 @router.get('/metadata')
-async def metadata(request: Request) -> JSONResponse:
+async def metadata(request: Request) -> Response:
     """
     Obtain metadata
     """
@@ -169,7 +128,7 @@ async def metadata(request: Request) -> JSONResponse:
 
 
 @router.get('/.well-known/oauth-authorization-server')
-async def oauth_authorization_server(request: Request) -> JSONResponse:
+async def oauth_authorization_server(request: Request) -> Response:
     """
     Obtain OAuth authorisation server metadata from well known URL
     """
@@ -194,22 +153,14 @@ async def issued_page(
 @router.post('/generate')
 async def generate_token(     # pylint: disable=too-many-arguments
     request: Request,
-    me: Annotated[str,  # pylint: disable=invalid-name
-                  Form()],
-    client_id: Annotated[str,
-                         Form()],
-    redirect_uri: Annotated[str,
-                            Form()],
-    response_type: Annotated[str,
-                             Form()],
-    scope: Annotated[str,
-                     Form()],
-    is_manually_issued: Annotated[str,
-                                  Form()],
-    state: Annotated[str,
-                     Form()] = None,
-    code_challenge_method: Annotated[str,
-                                     Form()] = None,
+    me: Annotated[str, Form()],    # pylint: disable=invalid-name
+    client_id: Annotated[str, Form()],
+    redirect_uri: Annotated[str, Form()],
+    response_type: Annotated[str, Form()],
+    scope: Annotated[str, Form()],
+    is_manually_issued: Annotated[str, Form()],
+    state: Annotated[Union[str, None], Form()] = None,
+    code_challenge_method: Annotated[Union[str, None], Form()] = None
 ):
     """
     Generate token
@@ -237,8 +188,8 @@ async def revoke_token(request: Request, token: str | None = None) -> Response:
     return await render_revoke_page(request, token)
 
 
-@router.get('token')
-async def get_token_endpoint(request: Request) -> JSONResponse:
+@router.get('/token')
+async def get_token_endpoint(request: Request) -> Response:
     """
     Issue token via GET
     """
@@ -246,32 +197,13 @@ async def get_token_endpoint(request: Request) -> JSONResponse:
     return await token_handler(request)
 
 
-@router.post('token')
+@router.post('/token')
 async def post_token_endpoint(     # pylint: disable=too-many-arguments
     request: Request,
-    action: Annotated[str,
-                      Form()],
-    grant_type: Annotated[str,
-                          Form()],
-    code: Annotated[str,
-                    Form()],
-    client_id: Annotated[str,
-                         Form()],
-    redirect_uri: Annotated[str,
-                            Form()],
-    code_verifier: Annotated[str,
-                             Form()]
-):
+    params: TokenParams
+) -> Response:
     """
     Issue token via POST
     """
 
-    return await token_form_handler(
-        request,
-        action,
-        grant_type,
-        code,
-        client_id,
-        redirect_uri,
-        code_verifier
-    )
+    return await token_form_handler(request=request, params=params)

@@ -4,6 +4,7 @@ IndieAuthify: dependencies package; settings module
 
 from functools import lru_cache
 from pathlib import Path
+from typing import Optional
 
 import dotenv
 
@@ -26,9 +27,9 @@ class Settings(BaseSettings):
     session_key: str
     api_key: str
 
-    webhook_server: bool = False
-    webhook_url: str = None
-    webhook_api_key: str = None
+    webhook_server: Optional[bool] = False
+    webhook_url: Optional[str] = None
+    webhook_api_key: Optional[str] = None
 
     rpc_timeout: int
 

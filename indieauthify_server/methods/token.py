@@ -2,6 +2,7 @@
 IndieAuthify: methods package; token methods handler module
 """
 
+import logging
 from dataclasses import asdict
 import datetime
 from http import HTTPStatus
@@ -18,6 +19,7 @@ import requests
 
 from indieauthify_server.dependencies.settings import get_settings
 from indieauthify_server.dependencies.flash import flash_message
+from indieauthify_server.models import TokenParams
 
 
 async def token_handler(request: Request) -> JSONResponse:    # pylint: disable=too-many-return-statements
@@ -79,7 +81,7 @@ async def token_handler(request: Request) -> JSONResponse:    # pylint: disable=
     resource = decoded_authorization_code['resource']
 
     if resource != 'all':
-        if request.path not in resource:
+        if request['path'] not in resource:
             return JSONResponse(
                 status_code=HTTPStatus.BAD_REQUEST,
                 content={'error': 'invalid_request'}
@@ -107,32 +109,27 @@ async def token_handler(request: Request) -> JSONResponse:    # pylint: disable=
 
 async def token_form_handler(   # pylint: disable=too-many-arguments
     request: Request,
-    action: str,
-    grant_type: str,
-    code: str,
-    client_id: str,
-    redirect_uri: str,
-    code_verifier: str
+    params: TokenParams
 ) -> JSONResponse:
     """
     Token form handler
     """
 
     settings = get_settings()
-    if action and action == 'revoke':
+    if params.action and params.action == 'revoke':
         connection = sqlite3.connect(settings.token_db_path)
 
         with connection:
             cursor = connection.cursor()
 
-            cursor.execute("INSERT INTO revoked_tokens VALUES (?)", (request.form.get('token'),))
+            cursor.execute("INSERT INTO revoked_tokens VALUES (?)", (params.code,))
 
         return JSONResponse(
             status_code=HTTPStatus.OK,
             content={}
         )
 
-    if grant_type == 'authorization_code':
+    if params.grant_type == 'authorization_code':
         access = 'all'
     else:
         db = sqlite3.connect(settings.token_db_path)
@@ -140,7 +137,9 @@ async def token_form_handler(   # pylint: disable=too-many-arguments
         with db:
             cursor = db.cursor()
 
-            ticket = cursor.execute("SELECT * FROM tickets WHERE token = ?", (code,)).fetchone()
+            ticket = cursor.execute("SELECT * FROM tickets WHERE token = ?",
+                                    (params.code,
+                                    )).fetchone()
 
             if not ticket:
                 return JSONResponse(
@@ -153,11 +152,11 @@ async def token_form_handler(   # pylint: disable=too-many-arguments
     settings = get_settings()
     try:
         redeem_code = indieweb_utils.redeem_code(
-            grant_type,
-            code,
-            client_id,
-            redirect_uri,
-            code_verifier,
+            params.grant_type,
+            params.code,
+            params.client_id,
+            params.redirect_uri,
+            params.code_verifier,
             settings.session_key,
             resource=access,
         )
@@ -187,24 +186,25 @@ async def token_form_handler(   # pylint: disable=too-many-arguments
     return JSONResponse(status_code=HTTPStatus.OK, content=content)
 
 
-async def generate_token_handler(   # pylint: disable=too-many-arguments
+async def generate_token_handler(
     request: Request,
-    me: str,    # pylint: disable=invalid-name
+    me: str,
     client_id: str,
     redirect_uri: str,
     response_type: str,
     scope: str,
     is_manually_issued: str,
-    state: str,
-    code_challenge_method: str
+    state: str | None = None,
+    code_challenge_method: str | None = None
 ) -> Response:
     """
     Generate token handler
     """
 
+    logging.debug('generate_token_handler')
     if not request.session.get("logged_in"):
         return RedirectResponse(url=request.url_for('get_login_page',
-                                                    {'r': str(request.url)}))
+                                                    **{'r': str(request.url)}))
 
     final_scope = ""
 
