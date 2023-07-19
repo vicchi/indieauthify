@@ -1,0 +1,13 @@
+# Ignore everything
+**
+
+!/run/**
+!/indieauthify_server/**
+!/static/**
+!/templates/**
+!/VERSION
+
+!/docker/indieauthify/*.sh
+!/docker/indieauthify/*.sql
+!/gunicorn.conf.py
+!/requirements.txt
