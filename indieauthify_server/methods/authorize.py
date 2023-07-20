@@ -166,7 +166,7 @@ async def authorize_handler(    # pylint: disable=too-many-arguments,too-many-re
         )
 
     try:
-        indieweb_utils.indieauth.server._verify_decoded_code(   # pylint: disable=protected-access
+        indieweb_utils.indieauth.server.verify_decoded_code(
             params.client_id,
             params.redirect_uri,
             decoded_code['client_id'],
