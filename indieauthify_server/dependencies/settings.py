@@ -8,7 +8,7 @@ from typing import Optional
 
 import dotenv
 
-from pydantic import BaseSettings
+from pydantic import BaseSettings, HttpUrl
 
 
 class Settings(BaseSettings):
@@ -18,11 +18,13 @@ class Settings(BaseSettings):
 
     app_env: str
 
-    me: str
+    me: HttpUrl
 
-    github_client_id: str
-    github_oauth_redirect: str
     github_client_secret: str
+    github_client_id: str
+    github_base_url: HttpUrl
+    github_token_url: HttpUrl
+    github_authorize_url: HttpUrl
 
     session_key: str
     api_key: str

@@ -16,4 +16,4 @@ docker run --rm \
     -v $(pwd)/gunicorn.conf.py:/service/gunicorn.conf.py \
     --name indieauthify \
     ghcr.io/vicchi/indieauthify:latest
-    ```
+```

@@ -10,7 +10,7 @@ from fastapi.responses import Response
 
 from indieauthify_server.models import AuthorizeParams, TokenParams
 from indieauthify_server.methods.authorize import authorize_handler
-from indieauthify_server.methods.github import github_auth_handler, github_callback_handler
+from indieauthify_server.methods.github import github_authenticate_handler, github_login_handler
 from indieauthify_server.methods.metadata import metadata_handler
 from indieauthify_server.methods.token import generate_token_handler, token_form_handler, token_handler
 from indieauthify_server.pages.home import render_home_page
@@ -106,16 +106,16 @@ async def github_authorize(request: Request) -> Response:
     GitHub authorization
     """
 
-    return await github_auth_handler(request)
+    return await github_login_handler(request)
 
 
 @router.get('/auth/github/callback')
-async def github_callback(request: Request, code: str, state: str) -> Response:
+async def github_callback(request: Request, state: str) -> Response:
     """
     GitHub authorization callback
     """
 
-    return await github_callback_handler(request, code, state)
+    return await github_authenticate_handler(request, state)
 
 
 @router.get('/metadata')
