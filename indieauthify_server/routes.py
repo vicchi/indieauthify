@@ -2,6 +2,7 @@
 IndieAuthify: routes module
 """
 
+import logging
 from typing import Annotated, Union
 
 from fastapi import APIRouter, Form, Query
@@ -28,6 +29,7 @@ async def home_page(request: Request) -> Response:
     Home page route handler
     """
 
+    logging.debug('%s %s', request.method, request.url.path)
     return await render_home_page(request)
 
 
@@ -42,6 +44,7 @@ async def get_login_page(
     GET login page handler
     """
 
+    logging.debug('%s %s', request.method, request.url.path)
     return await render_login_page(request=request, redirect=redirect)
 
 
@@ -58,6 +61,7 @@ async def post_login_page(
     POST login page handler
     """
 
+    logging.debug('%s %s', request.method, request.url.path)
     return await render_login_page(request=request, domain=domain, redirect=redirect)
 
 
@@ -67,6 +71,7 @@ async def rel_page(request: Request) -> Response:
     rel=me login page handler
     """
 
+    logging.debug('%s %s', request.method, request.url.path)
     return await render_rel_page(request=request)
 
 
@@ -76,6 +81,7 @@ async def logout_page(request: Request) -> Response:
     Logout page handler
     """
 
+    logging.debug('%s %s', request.method, request.url.path)
     return await render_logout_page(request)
 
 
@@ -85,6 +91,7 @@ async def get_authorize(request: Request, params: AuthorizeParams) -> Response:
     GET authorisation page handler
     """
 
+    logging.debug('%s %s', request.method, request.url.path)
     return await authorize_handler(request=request, params=params)
 
 
@@ -97,6 +104,7 @@ async def post_authorize(     # pylint: disable=too-many-arguments
     POST authorisation page handler
     """
 
+    logging.debug('%s %s', request.method, request.url.path)
     return await authorize_handler(request=request, params=params)
 
 
@@ -106,6 +114,7 @@ async def github_authorize(request: Request) -> Response:
     GitHub authorization
     """
 
+    logging.debug('%s %s', request.method, request.url.path)
     return await github_login_handler(request)
 
 
@@ -115,6 +124,7 @@ async def github_callback(request: Request, state: str) -> Response:
     GitHub authorization callback
     """
 
+    logging.debug('%s %s', request.method, request.url.path)
     return await github_authenticate_handler(request, state)
 
 
@@ -124,6 +134,7 @@ async def metadata(request: Request) -> Response:
     Obtain metadata
     """
 
+    logging.debug('%s %s', request.method, request.url.path)
     return await metadata_handler(request)
 
 
@@ -133,6 +144,7 @@ async def oauth_authorization_server(request: Request) -> Response:
     Obtain OAuth authorisation server metadata from well known URL
     """
 
+    logging.debug('%s %s', request.method, request.url.path)
     return await metadata_handler(request)
 
 
@@ -147,6 +159,7 @@ async def issued_page(
     View issued tokens
     """
 
+    logging.debug('%s %s', request.method, request.url.path)
     return await render_issued_page(request, feed, authorization, token)
 
 
@@ -166,6 +179,7 @@ async def generate_token(     # pylint: disable=too-many-arguments
     Generate token
     """
 
+    logging.debug('%s %s', request.method, request.url.path)
     return await generate_token_handler(
         request,
         me,
@@ -185,6 +199,7 @@ async def revoke_token(request: Request, token: str | None = None) -> Response:
     Revoke token
     """
 
+    logging.debug('%s %s', request.method, request.url.path)
     return await render_revoke_page(request, token)
 
 
@@ -194,6 +209,7 @@ async def get_token_endpoint(request: Request) -> Response:
     Issue token via GET
     """
 
+    logging.debug('%s %s', request.method, request.url.path)
     return await token_handler(request)
 
 
@@ -206,4 +222,5 @@ async def post_token_endpoint(     # pylint: disable=too-many-arguments
     Issue token via POST
     """
 
+    logging.debug('%s %s', request.method, request.url.path)
     return await token_form_handler(request=request, params=params)

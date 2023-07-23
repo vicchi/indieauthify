@@ -34,6 +34,7 @@ async def github_login_handler(request: Request) -> Response:
     GitHub login handler
     """
 
+    logging.debug('%s %s - github_login_handler', request.method, request.url.path)
     state = secrets.token_urlsafe(32)
     request.session['github_state'] = state
     redirect_uri = str(request.url_for('github_callback'))
@@ -50,6 +51,7 @@ async def github_authenticate_handler(request: Request, state: str) -> Response:
     GitHub authorisation callback handler
     """
 
+    logging.debug('%s %s - github_authenticate_handler', request.method, request.url.path)
     if state != request.session.get('github_state'):
         logging.error('%s: GitHub state token mismatch; bouncing to login page', request.url.path)
         flash_message(request, 'A GitHub state token mismatch was found', 'error')
