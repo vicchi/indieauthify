@@ -23,6 +23,7 @@ async def render_issued_page(
 ) -> Response:
     """
     Render the issues and issue detail page
+    GET /issued
     """
 
     settings = get_settings()

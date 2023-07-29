@@ -9,6 +9,7 @@ from fastapi.responses import RedirectResponse, Response
 async def render_logout_page(request: Request) -> Response:
     """
     Render the logout page, which isn't really a page
+    GET /logout
     """
 
     response = RedirectResponse(url='/')

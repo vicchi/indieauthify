@@ -24,6 +24,7 @@ async def authorize_handler(    # pylint: disable=too-many-arguments,too-many-re
 ) -> Response:
     """
     Authorization method handler
+    GET POST /auth
     """
 
     if request.method == 'GET':

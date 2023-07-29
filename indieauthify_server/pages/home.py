@@ -12,6 +12,7 @@ from indieauthify_server.dependencies.templates import get_template_engine
 
 async def render_home_page(request: Request) -> Response:
     """
+    GET /
     Render the landing/home page
     """
 

@@ -25,6 +25,7 @@ from indieauthify_server.models import TokenParams
 async def token_handler(request: Request) -> JSONResponse:    # pylint: disable=too-many-return-statements
     """
     Token handler
+    GET /token
     """
 
     authorization = request.headers.get('authorization')
@@ -113,6 +114,7 @@ async def token_form_handler(   # pylint: disable=too-many-arguments
 ) -> JSONResponse:
     """
     Token form handler
+    POST /token
     """
 
     settings = get_settings()
@@ -199,6 +201,7 @@ async def generate_token_handler(
 ) -> Response:
     """
     Generate token handler
+    POST /generate
     """
 
     logging.debug('generate_token_handler')

@@ -12,6 +12,8 @@ import indieweb_utils
 async def metadata_handler(request: Request) -> JSONResponse:
     """
     Metadata endpoint and well known URL handler
+    GET /metadata
+    GET /.well-known/oauth-authorization-server
     """
 
     body = {

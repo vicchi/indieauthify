@@ -32,6 +32,7 @@ github = oauth.register(
 async def github_login_handler(request: Request) -> Response:
     """
     GitHub login handler
+    GET /auth/github
     """
 
     logging.debug('%s %s - github_login_handler', request.method, request.url.path)
@@ -49,6 +50,7 @@ async def github_login_handler(request: Request) -> Response:
 async def github_authenticate_handler(request: Request, state: str) -> Response:
     """
     GitHub authorisation callback handler
+    GET /auth/github/callback
     """
 
     logging.debug('%s %s - github_authenticate_handler', request.method, request.url.path)

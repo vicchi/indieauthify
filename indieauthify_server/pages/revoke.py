@@ -15,6 +15,7 @@ from indieauthify_server.dependencies.flash import flash_message
 async def render_revoke_page(request: Request, token: str | None = None) -> Response:
     """
     Render the revoke token page
+    GET /revoke
     """
 
     if not token:
