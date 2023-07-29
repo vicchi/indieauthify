@@ -7,8 +7,10 @@ import logging
 
 from fastapi.requests import Request
 from fastapi.responses import JSONResponse, RedirectResponse, Response
-import indieweb_utils
+from pydantic import HttpUrl
+from pydantic.tools import parse_obj_as
 
+from indieauthify_server.common.relme import get_relme_links
 from indieauthify_server.dependencies.settings import get_settings
 from indieauthify_server.dependencies.templates import get_template_engine
 from indieauthify_server.dependencies.flash import flash_message
@@ -21,6 +23,7 @@ async def render_login_page(    # pylint: disable=too-many-return-statements
 ) -> Response:
     """
     Render the login page
+    GET POST /login
     """
 
     logging.debug('%s %s - render_login_page', request.method, request.url.path)
@@ -91,6 +94,7 @@ async def render_login_page(    # pylint: disable=too-many-return-statements
 async def render_rel_page(request: Request) -> Response:
     """
     Render the rel=me login page
+    GET /rel
     """
 
     logging.debug('%s %s - render_rel_page', request.method, request.url.path)
@@ -113,11 +117,9 @@ async def render_rel_page(request: Request) -> Response:
         logging.debug('found session.me and not session.user_redirect, bouncing to /')
         return RedirectResponse(url='/')
 
-    logging.debug('getting rel=me links for %s', request.session.get('rel_me_check'))
-    rel_me_links = indieweb_utils.get_valid_relmeauth_links(
-        request.session.get('rel_me_check'),
-        require_rel_me_link_back=True
-    )
+    relme_uri = parse_obj_as(HttpUrl, request.session.get('rel_me_check'))
+    logging.debug('getting rel=me links for %s', relme_uri)
+    rel_me_links = get_relme_links(relme_uri, require_link_back=False)
     logging.debug('received rel=me links: %s', rel_me_links)
     settings = get_settings()
     args = {
