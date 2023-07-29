@@ -11,6 +11,7 @@ from fastapi.responses import JSONResponse, RedirectResponse, Response
 import indieweb_utils
 import jwt
 import requests
+from indieauthify_server.common.url import normalise_url
 
 from indieauthify_server.dependencies.settings import get_settings
 from indieauthify_server.dependencies.templates import get_template_engine
@@ -31,7 +32,15 @@ async def authorize_handler(    # pylint: disable=too-many-arguments,too-many-re
 
         domain_uri = params.me
         session_uri = request.session.get('me')
-        if domain_uri and session_uri and domain_uri.strip('/') != session_uri.strip('/'):
+        if domain_uri and session_uri and normalise_url(
+            domain_uri,
+            noslash=True,
+            noscheme=False
+        ) != normalise_url(
+            session_uri,
+            noslash=True,
+            noscheme=False
+        ):
             request.session.pop('logged_in', None)
             request.session.pop('me', None)
 
@@ -93,7 +102,7 @@ async def authorize_handler(    # pylint: disable=too-many-arguments,too-many-re
 
             for url in links:
                 if url.startswith('/'):
-                    url = redirect_uri_scheme + redirect_uri_domain.strip('/') + url
+                    url = f'{redirect_uri_scheme}{normalise_url(redirect_uri_domain, noslash=True, noscheme=False)}{url}'
 
                 if url == params.redirect_uri:
                     confirmed_redirect_uri = True
@@ -105,7 +114,7 @@ async def authorize_handler(    # pylint: disable=too-many-arguments,too-many-re
                     url = link.get('href')
 
                     if url.startswith('/'):
-                        url = redirect_uri_scheme + redirect_uri_domain.strip('/') + url
+                        url = f'{redirect_uri_scheme}{normalise_url(redirect_uri_domain, noslash=True, noscheme=False)}{url}'
 
                     if url == params.redirect_uri:
                         confirmed_redirect_uri = True
@@ -131,7 +140,7 @@ async def authorize_handler(    # pylint: disable=too-many-arguments,too-many-re
             'code_challenge_method': params.code_challenge_method,
             'h_app_item': h_app_item,
             'SCOPE_DEFINITIONS': indieweb_utils.SCOPE_DEFINITIONS,
-            'title': f"Authenticate to {params.client_id.replace('https://', '').replace('http://', '').strip()}"
+            'title': f"Authenticate to {normalise_url(params.client_id, noslash=False, noscheme=True).strip()}"
         }
 
         return get_template_engine().TemplateResponse('confirm_auth.html.j2', args)

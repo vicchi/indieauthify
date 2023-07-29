@@ -11,6 +11,7 @@ from indieweb_utils.parsing.parse import get_parsed_mf2_data
 from indieweb_utils.utils.urls import canonicalize_url
 from pydantic import HttpUrl
 import requests
+from indieauthify_server.common.url import normalise_url
 
 from indieauthify_server.dependencies.settings import get_settings
 
@@ -21,7 +22,7 @@ def get_relme_links(url: HttpUrl, require_link_back: bool = True) -> List[str]:
     """
 
     domain = urllib.parse.urlparse(url).netloc
-    canonical_url = canonicalize_url(url, domain).strip('/')
+    canonical_url = normalise_url(canonicalize_url(url, domain), noslash=True, noscheme=False)
     mf2_data = get_parsed_mf2_data(parsed_mf2=None, html=None, url=canonical_url)
     relme_links = [canonicalize_url(url, domain) for url in mf2_data['rels'].get('me', [])]
     valid_links = set()

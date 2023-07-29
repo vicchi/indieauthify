@@ -11,6 +11,7 @@ from pydantic import HttpUrl
 from pydantic.tools import parse_obj_as
 
 from indieauthify_server.common.relme import get_relme_links
+from indieauthify_server.common.url import normalise_url
 from indieauthify_server.dependencies.settings import get_settings
 from indieauthify_server.dependencies.templates import get_template_engine
 from indieauthify_server.dependencies.flash import flash_message
@@ -31,9 +32,9 @@ async def render_login_page(    # pylint: disable=too-many-return-statements
     settings = get_settings()
 
     if redirect and redirect.split('/')[2].endswith(
-        settings.me.strip('/').replace('https://',
-                                       '').replace('http://',
-                                                   '')
+        normalise_url(str(settings.me),
+                      noslash=True,
+                      noscheme=True)
     ):
         logging.debug('setting session.user_redirect to %s', redirect)
         request.session['user_redirect'] = redirect
@@ -51,7 +52,7 @@ async def render_login_page(    # pylint: disable=too-many-return-statements
             return RedirectResponse(url=str(request.session.get('user_redirect')))
 
         logging.debug('found session.me and not session.user_redirect, bouncing to /')
-        return RedirectResponse(url='/')
+        return RedirectResponse(url=request.url_for('home_page'))
 
     args = {
         'request': request,
@@ -68,8 +69,8 @@ async def render_login_page(    # pylint: disable=too-many-return-statements
                 }
             )
 
-        domain_uri = domain.strip('/').replace('https://', '').replace('http://', '')
-        me_uri = settings.me.strip('/').replace('https://', '').replace('http://', '')
+        domain_uri = normalise_url(domain, noslash=True, noscheme=True)
+        me_uri = normalise_url(str(settings.me), noslash=True, noscheme=True)
         if domain_uri != me_uri:
             flash_message(request, 'Only approved domains can access this service', 'error')
 
