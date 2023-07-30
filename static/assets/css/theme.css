@@ -1219,6 +1219,14 @@ select {
   flex: 1 1 0%;
 }
 
+.list-disc {
+  list-style-type: disc;
+}
+
+.list-none {
+  list-style-type: none;
+}
+
 .flex-col {
   flex-direction: column;
 }

@@ -120,7 +120,7 @@ async def render_rel_page(request: Request) -> Response:
 
     relme_uri = parse_obj_as(HttpUrl, request.session.get('rel_me_check'))
     logging.debug('getting rel=me links for %s', relme_uri)
-    rel_me_links = get_relme_links(relme_uri, require_link_back=False)
+    rel_me_links = get_relme_links(relme_uri, require_link_back=True)
     logging.debug('received rel=me links: %s', rel_me_links)
     settings = get_settings()
     args = {

@@ -7,16 +7,22 @@
     <p>Welcome to IndieAuthify's IndieAuth Endpoint, <code>{{ request.session.get("rel_me_check").replace("https://", "").replace("http://", "").strip("/") }}</code>.</p>
     <p>You must authenticate yourself before you are able to grant authorization codes.</p>
     <p>You can use any of the authentication methods below to sign in ...</p>
-    <ul class="rel_me_links">
-        {% for link in rel_me_links %}
-        {% if link.startswith("https://twitter.com") %}
-        <li><s>Twitter</s></li>
-        {% elif link.startswith("https://github.com") %}
-        <li><a href="/auth/github">GitHub</a>&nbsp;<code>{{ link }}</code></li>
+    <ul class="list-disc">
+    {% for link in rel_me_links %}
+        {% if link.startswith("https://github.com") %}
+        <li><a href="/auth/github"><code>{{ link }}</code></a>
+            <ul class="list-none">
+                <li>OK! Click to authenticate</li>
+            </ul>
+        </li>
         {% else %}
-        <li><s>{{ link }}</s></li>
+        <li><s>{{ link }}</s>
+            <ul class="list-none">
+                <li>Sorry, this provider isn't currently supported</li>
+            </ul>
+        </li>
         {% endif %}
-        {% endfor %}
+    {% endfor %}
     </ul>
 </div>
 {% endblock %}
