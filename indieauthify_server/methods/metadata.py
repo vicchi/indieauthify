@@ -17,14 +17,16 @@ async def metadata_handler(request: Request) -> JSONResponse:
     """
 
     body = {
-        'authorization_endpoint': str(request.url_for('get_authorize')),
-        'code_challenge_methods_supported': ['S256'],
-        'grant_types_supported': ['authorization_code'],
         'issuer': str(request.url_for('get_authorize')),
-        'response_models_supported': ['query'],
-        'response_types_supported': ['code'],
+        'authorization_endpoint': str(request.url_for('get_authorize')),
+        'token_endpoint': str(request.url_for('generate_token')),
+        'revocation_endpoint': str(request.url_for('revoke_token')),
         'scopes_supported': indieweb_utils.SCOPE_DEFINITIONS,
-        'token_endpoint': str(request.url_for('generate_token'))
+        'response_types_supported': ['code'],
+        'response_models_supported': ['query'],
+        'grant_types_supported': ['authorization_code'],
+        'service_documentation': 'https://indieauth.spec.indieweb.org/',
+        'code_challenge_methods_supported': ['S256']
     }
 
     return JSONResponse(status_code=HTTPStatus.OK, content=body)
